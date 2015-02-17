@@ -2,8 +2,10 @@
 
 int main()
 {
-	Integer a = Integer("10737418240");
+	Integer a = Integer("239841029834710293874");
+	Integer b = Integer("735982342");
 
-	(a >> 31).print();
+	(b*a).print();
+	(b*(-a)).print();
 	return 0;
 }

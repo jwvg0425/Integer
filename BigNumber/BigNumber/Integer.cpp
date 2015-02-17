@@ -1,6 +1,7 @@
 ﻿#include "Integer.h"
 #include <deque>
 #include <iostream>
+#include <stdlib.h>
 
 const Integer Integer::add(const Integer& other) const
 {
@@ -18,7 +19,7 @@ const Integer Integer::add(const Integer& other) const
 	else
 	{
 		result.m_Value = m_Value;
-		result.m_Positive = other.m_Positive;
+		result.m_Positive = m_Positive;
 		addValue = other.m_Value;
 		addPositive = other.m_Positive;
 	}
@@ -58,11 +59,19 @@ const Integer Integer::add(const Integer& other) const
 		}
 	}
 
-	if (carryBit == 1 && result.m_Positive != addPositive)
+	if (carryBit == 1)
 	{
-		result.m_Positive = true;
-		result.m_Value.push_back(1);
+		if (result.m_Positive != addPositive)
+		{
+			result.m_Positive = true;
+		}
+		else
+		{
+			result.m_Value.push_back(1);
+		}
 	}
+
+	result.normalize();
 
 	return result;
 }
@@ -107,6 +116,12 @@ Integer::Integer(const std::string& n)
 Integer::Integer(const Integer& other) 
 : m_Value(other.m_Value), m_Positive(other.m_Positive)
 {
+}
+
+Integer::Integer(unsigned int n)
+{
+	m_Value.push_back(n);
+	m_Positive = true;
 }
 
 Integer::~Integer()
@@ -168,9 +183,14 @@ const Integer Integer::signSwitch() const
 	{
 		digit = ~digit;
 	}
-
-	result = result.add(1);
 	result.m_Positive = !this->m_Positive;
+	result = result.add(1);
+	
+	//값이 0인 경우는 무조건 부호를 양수로 고정.
+	if (result.m_Value.size() == 1 && result.m_Value[0] == 0)
+	{
+		result.m_Positive = true;
+	}
 
 	return result;
 }
@@ -255,12 +275,12 @@ const Integer Integer::operator-(const Integer& other) const
 	return add(-other);
 }
 
-unsigned int Integer::highWord(unsigned int n)
+unsigned int Integer::highWord(unsigned int n) const
 {
 	return n >> 16;
 }
 
-unsigned int Integer::lowWord(unsigned int n)
+unsigned int Integer::lowWord(unsigned int n) const
 {
 	return n & (0xffff);
 }
@@ -297,6 +317,8 @@ const Integer Integer::leftShift(unsigned int n) const
 	{
 		result.m_Value.insert(result.m_Value.begin(), 0);
 	}
+
+	result.normalize();
 
 	return result;
 }
@@ -348,4 +370,116 @@ Integer& Integer::operator <<=(unsigned int n)
 Integer& Integer::operator >>=(unsigned int n)
 {
 	return *this = (*this) >> n;
+}
+
+//Karatsuba Algorithm 사용
+const Integer Integer::multiply(const Integer& other) const
+{
+	Integer a = abs(*this);
+	Integer b = abs(other);
+
+	//base
+	if (m_Value.size() == 1 && other.m_Value.size() == 1)
+	{
+		unsigned x0 = lowWord(a.m_Value[0]);
+		unsigned x1 = highWord(a.m_Value[0]);
+		unsigned y0 = lowWord(b.m_Value[0]);
+		unsigned y1 = highWord(b.m_Value[0]);
+		unsigned z0 = x0*y0;
+		unsigned z2 = x1*y1;
+		Integer result = (x1 + x0)*(y1 + y0) - z2 - z0;
+		Integer added = z2;
+		result = (added<<32) + (result << 16) + z0;
+
+		if (m_Positive^other.m_Positive)
+		{
+			result = -result;
+		}
+
+		return result;
+	}
+
+	size_t size = __max(a.m_Value.size() / 2, b.m_Value.size() / 2);
+	auto first0 = a.m_Value.begin();
+	auto mid0 = size < a.m_Value.size() ? (first0 + size) : a.m_Value.end();
+	auto end0 = a.m_Value.end();
+	auto first1 = b.m_Value.begin();
+	auto mid1 = size < b.m_Value.size() ? (first1 + size) : b.m_Value.end();
+	auto end1 = b.m_Value.end();
+
+	Integer x0;
+	x0.m_Value.assign(first0, mid0);
+	Integer x1;
+	x1.m_Value.assign(mid0, end0);
+	if (x1.m_Value.empty())
+	{
+		x1.m_Value.push_back(0);
+	}
+	Integer y0;
+	y0.m_Value.assign(first1, mid1);
+	Integer y1;
+	y1.m_Value.assign(mid1, end1);
+	if (y1.m_Value.empty())
+	{
+		y1.m_Value.push_back(0);
+	}
+
+	Integer z0 = x0 * y0;
+	Integer z2 = x1 * y1;
+	Integer z1 = (x1 + x0)*(y1 + y0) - z2 - z0;
+	Integer result = (z2 << (64 * size)) + (z1 << (32 * size)) + z0;
+
+	if (m_Positive^other.m_Positive)
+	{
+		result = -result;
+	}
+
+	return result;
+}
+
+const Integer Integer::operator *(const Integer& other) const
+{
+	return multiply(other);
+}
+
+Integer& Integer::operator *=(const Integer& other)
+{
+	return *this = (*this) * other;
+}
+
+const std::string Integer::asString() const
+{
+	return valueToString();
+}
+
+void Integer::normalize()
+{
+	for (int i = m_Value.size() - 1; i > 0; i--)
+	{
+		if (m_Value[i] == 0)
+		{
+			m_Value.pop_back();
+		}
+		else
+		{
+			return;
+		}
+	}
+}
+
+bool Integer::isPositive() const
+{
+	return m_Positive;
+}
+
+Integer abs(const Integer& integer)
+{
+	if (integer.isPositive())
+	{
+		return integer;
+	}
+	else
+	{
+		return -integer;
+	}
 }
