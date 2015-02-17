@@ -1,11 +1,9 @@
-﻿#include "BigInt.h"
+﻿#include "Integer.h"
 
 int main()
 {
-	Integer a("-5");
-	Integer b(5);
+	Integer a = Integer("10737418240");
 
-	(a-b).print();
-	b.print();
+	(a >> 31).print();
 	return 0;
 }

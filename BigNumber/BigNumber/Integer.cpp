@@ -1,4 +1,4 @@
-﻿#include "BigInt.h"
+﻿#include "Integer.h"
 #include <deque>
 #include <iostream>
 
@@ -234,9 +234,7 @@ const Integer Integer::operator+() const
 
 Integer& Integer::operator +=(const Integer& other)
 {
-	*this = add(other);
-
-	return *this;
+	return *this = (*this) + other;
 }
 
 Integer& Integer::operator =(const Integer& other)
@@ -254,5 +252,100 @@ const Integer Integer::operator-() const
 
 const Integer Integer::operator-(const Integer& other) const
 {
-	return add(other.signSwitch());
+	return add(-other);
+}
+
+unsigned int Integer::highWord(unsigned int n)
+{
+	return n >> 16;
+}
+
+unsigned int Integer::lowWord(unsigned int n)
+{
+	return n & (0xffff);
+}
+
+const Integer Integer::leftShift(unsigned int n) const
+{
+	Integer result = *this;
+	int pushNum = n / 32;
+	int shiftNum = n % 32;
+	size_t size = result.m_Value.size();
+
+	if (shiftNum != 0)
+	{
+		unsigned int overflow = result.m_Value[0] >> (32 - shiftNum);
+		//가장 큰 자릿수에서 오버플로우 날 경우 그만큼 맨 뒤에 추가
+		if (overflow != 0)
+		{
+			result.m_Value.push_back(overflow);
+		}
+
+		for (int i = size - 1; i >= 0; i--)
+		{
+			result.m_Value[i] <<= shiftNum;
+
+			if (i > 0 )
+			{
+				result.m_Value[i] +=
+					result.m_Value[i - 1] >> (32 - shiftNum);
+			}
+		}
+	}
+
+	for (int i = 0; i < pushNum; i++)
+	{
+		result.m_Value.insert(result.m_Value.begin(), 0);
+	}
+
+	return result;
+}
+
+const Integer Integer::rightShift(unsigned int n) const
+{
+	Integer result = *this;
+	int popNum = n / 32;
+	int shiftNum = n % 32;
+
+	for (int i = 0; i < popNum && !m_Value.empty(); i++)
+	{
+		result.m_Value.erase(result.m_Value.begin());
+	}
+
+	for (int i = 0; i < result.m_Value.size(); i++)
+	{
+		result.m_Value[i] >>= shiftNum;
+
+		if (i + 1 < result.m_Value.size())
+		{
+			result.m_Value[i] += result.m_Value[i + 1] << (32 - shiftNum);
+		}
+	}
+
+	return result;
+}
+
+const Integer Integer::operator<<(unsigned int n) const
+{
+	return leftShift(n);
+}
+
+const Integer Integer::operator>>(unsigned int n) const
+{
+	return rightShift(n);
+}
+
+Integer& Integer::operator -=(const Integer& other)
+{
+	return *this = (*this) - other;
+}
+
+Integer& Integer::operator <<=(unsigned int n)
+{
+	return *this = (*this) << n;
+}
+
+Integer& Integer::operator >>=(unsigned int n)
+{
+	return *this = (*this) >> n;
 }
