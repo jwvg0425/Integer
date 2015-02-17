@@ -65,7 +65,7 @@ const Integer Integer::add(const Integer& other) const
 		{
 			result.m_Positive = true;
 		}
-		else
+		else if(result.m_Positive == true)
 		{
 			result.m_Value.push_back(1);
 		}
@@ -79,6 +79,7 @@ const Integer Integer::add(const Integer& other) const
 Integer::Integer()
 {
 	m_Value.clear();
+	m_Positive = true;
 }
 
 Integer::Integer(int n)
@@ -96,6 +97,8 @@ Integer::Integer(int n)
 
 Integer::Integer(const std::string& n)
 {
+	m_Positive = true;
+
 	if (n[0] == '-')
 	{
 		std::string number(n.begin() + 1, n.end());
@@ -398,8 +401,9 @@ const Integer Integer::multiply(const Integer& other) const
 
 		return result;
 	}
-
-	size_t size = __max((a.m_Value.size() + 1) / 2, (b.m_Value.size() + 1) / 2);
+	size_t aMid = (a.m_Value.size() + 1) / 2;
+	size_t bMid = (b.m_Value.size() + 1) / 2;
+	size_t size = aMid > bMid ? aMid : bMid;
 	auto first0 = a.m_Value.begin();
 	auto mid0 = size < a.m_Value.size() ? (first0 + size) : a.m_Value.end();
 	auto end0 = a.m_Value.end();
