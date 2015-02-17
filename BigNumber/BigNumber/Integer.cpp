@@ -399,7 +399,7 @@ const Integer Integer::multiply(const Integer& other) const
 		return result;
 	}
 
-	size_t size = __max(a.m_Value.size() / 2, b.m_Value.size() / 2);
+	size_t size = __max((a.m_Value.size() + 1) / 2, (b.m_Value.size() + 1) / 2);
 	auto first0 = a.m_Value.begin();
 	auto mid0 = size < a.m_Value.size() ? (first0 + size) : a.m_Value.end();
 	auto end0 = a.m_Value.end();
