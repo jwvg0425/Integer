@@ -481,7 +481,14 @@ const Integer Integer::divide(const Integer& other) const
 	Integer quot = 0;
 	Integer rem = 0;
 
-	divideWithRemainder(*this, other, &quot, &rem, 0);
+	divideWithRemainder(abs(*this), abs(other), &quot, &rem, 0);
+
+
+	//제수 피제수 부호 다른 경우 음수.
+	if (m_Positive ^ other.m_Positive)
+	{
+		quot = -quot;
+	}
 
 	return quot;
 }
@@ -590,7 +597,13 @@ const Integer Integer::mod(const Integer& other) const
 	Integer quot = 0;
 	Integer rem = 0;
 
-	divideWithRemainder(*this, other, &quot, &rem, 0);
+	divideWithRemainder(abs(*this), abs(other), &quot, &rem, 0);
+
+	//C/C++의 처리에 맞춰서, 제수의 부호와 모듈러 연산의 결과 부호가 동일하도록 처리.
+	if (!m_Positive)
+	{
+		rem = -rem;
+	}
 
 	return rem;
 }
