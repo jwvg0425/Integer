@@ -297,7 +297,7 @@ const Integer Integer::leftShift(unsigned int n) const
 
 	if (shiftNum != 0)
 	{
-		unsigned int overflow = result.m_Value[0] >> (32 - shiftNum);
+		unsigned int overflow = result.m_Value[size-1] >> (32 - shiftNum);
 		//가장 큰 자릿수에서 오버플로우 날 경우 그만큼 맨 뒤에 추가
 		if (overflow != 0)
 		{
@@ -476,6 +476,145 @@ bool Integer::isPositive() const
 	return m_Positive;
 }
 
+const Integer Integer::divide(const Integer& other) const
+{
+	Integer quot = 0;
+	Integer rem = 0;
+
+	divideWithRemainder(*this, other, &quot, &rem, 0);
+
+	return quot;
+}
+
+int Integer::compare(const Integer& other) const
+{
+	if (m_Positive & !other.m_Positive)
+	{
+		return 1;
+	}
+	if (!m_Positive & other.m_Positive)
+	{
+		return -1;
+	}
+
+	//길이가 더 긴쪽이 절댓값이 큼
+	if (m_Value.size() > other.m_Value.size())
+	{
+		return m_Positive ? 1 : -1;
+	}
+	else if (m_Value.size() < other.m_Value.size())
+	{
+		return m_Positive ? -1 : 1;
+	}
+
+	//길이가 같은 경우 제일 큰 자리부터 일일히 평가.
+
+	for (int i = m_Value.size() - 1; i >= 0; i--)
+	{
+		if (m_Value[i] > other.m_Value[i])
+		{
+			return m_Positive ? 1 : -1;
+		}
+		else if (m_Value[i] < other.m_Value[i])
+		{
+			return m_Positive ? -1 : 1;
+		}
+	}
+
+	return 0;
+}
+
+bool Integer::operator==(const Integer& other) const
+{
+	return compare(other) == 0;
+}
+
+bool Integer::operator!=(const Integer& other) const
+{
+	return compare(other) != 0;
+}
+
+bool Integer::operator>(const Integer& other) const
+{
+	return compare(other) == 1;
+}
+
+bool Integer::operator>=(const Integer& other) const
+{
+	return compare(other) >= 0;
+}
+
+bool Integer::operator<(const Integer& other) const
+{
+	return compare(other) == -1;
+}
+
+bool Integer::operator<=(const Integer& other) const
+{
+	return compare(other) <= 0;
+}
+void Integer::divideWithRemainder(const Integer& divisor, const Integer& dividend,
+									Integer* quot, Integer* rem, int bit) const
+{
+	//base. 피제수가 제수보다 크면 몫은 0, 나머지는 제수가 됨.
+	if (divisor < dividend)
+	{
+		*rem = divisor;
+		return;
+	}
+
+	Integer divd = dividend;
+	divd <<= bit;
+
+	while (divisor > (divd << 1))
+	{
+		divd <<= 1;
+		bit++;
+	}
+
+	Integer divs = divisor;
+	Integer quotAdd = 1;
+	quotAdd <<= bit;
+
+	while (divs >= divd)
+	{
+		divs -= divd;
+		*quot += quotAdd;
+	}
+
+	divideWithRemainder(divs, dividend, quot, rem, bit > 2 ? bit - 2 : 0);
+}
+
+const Integer Integer::mod(const Integer& other) const
+{
+	Integer quot = 0;
+	Integer rem = 0;
+
+	divideWithRemainder(*this, other, &quot, &rem, 0);
+
+	return rem;
+}
+
+const Integer Integer::operator/(const Integer& other) const
+{
+	return divide(other);
+}
+
+const Integer Integer::operator%(const Integer& other) const
+{
+	return mod(other);
+}
+
+Integer& Integer::operator/=(const Integer& other)
+{
+	return *this = (*this) / other;
+}
+
+Integer& Integer::operator%=(const Integer& other)
+{
+	return *this = (*this) % other;
+}
+
 Integer abs(const Integer& integer)
 {
 	if (integer.isPositive())
@@ -486,4 +625,33 @@ Integer abs(const Integer& integer)
 	{
 		return -integer;
 	}
+}
+
+const Integer operator+(int n, const Integer& other)
+{
+	return other + n;
+}
+
+const Integer operator-(int n, const Integer& other)
+{
+	return -(other - n);
+}
+
+const Integer operator*(int n, const Integer& other)
+{
+	return other * n;
+}
+
+const Integer operator/(int n, const Integer& other)
+{
+	Integer nInteger = n;
+
+	return nInteger / other;
+}
+
+const Integer operator%(int n, const Integer& other)
+{
+	Integer nInteger = n;
+
+	return nInteger / other;
 }
