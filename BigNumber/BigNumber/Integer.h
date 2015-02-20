@@ -11,6 +11,8 @@ public:
 	~Integer();
 	Integer(int n);
 	Integer(unsigned int n);
+	Integer(long long int n);
+	Integer(unsigned long long int n);
 	explicit Integer(const std::string& n);
 	Integer(const Integer& other);
 
@@ -25,9 +27,14 @@ public:
 
 	//부호 변경
 	const Integer signSwitch() const;
-	//shift
+
+	//비트 연산
 	const Integer leftShift(unsigned int n) const;
 	const Integer rightShift(unsigned int n) const;
+	const Integer or(const Integer& other) const;
+	const Integer and(const Integer& other) const;
+	const Integer xor(const Integer& other) const;
+	const Integer not() const;
 
 	//부호 연산
 	const Integer operator -() const;
@@ -51,6 +58,10 @@ public:
 	//비트 연산
 	const Integer operator <<(unsigned int n) const;
 	const Integer operator >>(unsigned int n) const;
+	const Integer operator &(const Integer& other) const;
+	const Integer operator |(const Integer& other) const;
+	const Integer operator ^(const Integer& other) const;
+	const Integer operator ~() const;
 
 	//대입 연산
 	Integer& operator =(const Integer& other);
@@ -61,9 +72,16 @@ public:
 	Integer& operator %=(const Integer& other);
 	Integer& operator <<=(unsigned int n);
 	Integer& operator >>=(unsigned int n);
+	Integer& operator &=(const Integer& other);
+	Integer& operator |=(const Integer& other);
+	Integer& operator ^=(const Integer& other);
 	
 	void print() const;
 	const std::string asString() const;
+	int asInt() const;
+	unsigned int asUnsigned() const;
+	long long int asInt64() const;
+	unsigned long long int asUnsigned64() const;
 	bool isPositive() const;
 
 private:
@@ -90,5 +108,69 @@ const Integer operator -(int n, const Integer& other);
 const Integer operator *(int n, const Integer& other);
 const Integer operator /(int n, const Integer& other);
 const Integer operator %(int n, const Integer& other);
+
+const Integer operator +(unsigned int n, const Integer& other);
+const Integer operator -(unsigned int n, const Integer& other);
+const Integer operator *(unsigned int n, const Integer& other);
+const Integer operator /(unsigned int n, const Integer& other);
+const Integer operator %(unsigned int n, const Integer& other);
+
+const Integer operator +(long long int n, const Integer& other);
+const Integer operator -(long long int n, const Integer& other);
+const Integer operator *(long long int n, const Integer& other);
+const Integer operator /(long long int n, const Integer& other);
+const Integer operator %(long long int n, const Integer& other);
+
+const Integer operator +(unsigned long long int n, const Integer& other);
+const Integer operator -(unsigned long long int n, const Integer& other);
+const Integer operator *(unsigned long long int n, const Integer& other);
+const Integer operator /(unsigned long long int n, const Integer& other);
+const Integer operator %(unsigned long long int n, const Integer& other);
+
+//비교 연산
+bool operator ==(int n, const Integer& other);
+bool operator !=(int n, const Integer& other);
+bool operator >(int n, const Integer& other);
+bool operator >=(int n, const Integer& other);
+bool operator <(int n, const Integer& other);
+bool operator <=(int n, const Integer& other);
+
+bool operator ==(unsigned int n, const Integer& other);
+bool operator !=(unsigned int n, const Integer& other);
+bool operator >(unsigned int n, const Integer& other);
+bool operator >=(unsigned int n, const Integer& other);
+bool operator <(unsigned int n, const Integer& other);
+bool operator <=(unsigned int n, const Integer& other);
+
+bool operator ==(long long int n, const Integer& other);
+bool operator !=(long long int n, const Integer& other);
+bool operator >(long long int n, const Integer& other);
+bool operator >=(long long int n, const Integer& other);
+bool operator <(long long int n, const Integer& other);
+bool operator <=(long long int n, const Integer& other);
+
+bool operator ==(unsigned long long int n, const Integer& other);
+bool operator !=(unsigned long long int n, const Integer& other);
+bool operator >(unsigned long long int n, const Integer& other);
+bool operator >=(unsigned long long int n, const Integer& other);
+bool operator <(unsigned long long int n, const Integer& other);
+bool operator <=(unsigned long long int n, const Integer& other);
+
+//비트 연산
+const Integer operator &(int n, const Integer& other);
+const Integer operator |(int n,const Integer& other);
+const Integer operator ^(int n, const Integer& other);
+
+const Integer operator &(unsigned int n, const Integer& other);
+const Integer operator |(unsigned int n, const Integer& other);
+const Integer operator ^(unsigned int n, const Integer& other);
+
+const Integer operator &(long long int n, const Integer& other);
+const Integer operator |(long long int n, const Integer& other);
+const Integer operator ^(long long int n, const Integer& other);
+
+const Integer operator &(unsigned long long int n, const Integer& other);
+const Integer operator |(unsigned long long int n, const Integer& other);
+const Integer operator ^(unsigned long long int n, const Integer& other);
 
 #endif

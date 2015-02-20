@@ -78,7 +78,7 @@ const Integer Integer::add(const Integer& other) const
 
 Integer::Integer()
 {
-	m_Value.clear();
+	m_Value.push_back(0);
 	m_Positive = true;
 }
 
@@ -124,6 +124,26 @@ Integer::Integer(const Integer& other)
 Integer::Integer(unsigned int n)
 {
 	m_Value.push_back(n);
+	m_Positive = true;
+}
+
+Integer::Integer(long long int n)
+{
+	//하위 32비트
+	m_Value.push_back(n & 0xffffffff);
+	//상위 32비트
+	m_Value.push_back((n >> 32) & 0xffffffff);
+
+	m_Positive = (n >= 0);
+}
+
+Integer::Integer(unsigned long long int n)
+{
+	//하위 32비트
+	m_Value.push_back(n & 0xffffffff);
+	//상위 32비트
+	m_Value.push_back((n >> 32) & 0xffffffff);
+
 	m_Positive = true;
 }
 
@@ -628,6 +648,126 @@ Integer& Integer::operator%=(const Integer& other)
 	return *this = (*this) % other;
 }
 
+const Integer Integer::or(const Integer& other) const
+{
+	Integer result = (*this);
+
+	for (int i = 0; i < m_Value.size(); i++)
+	{
+		result.m_Value[i] |= other.m_Value[i];
+	}
+
+	return result;
+}
+
+const Integer Integer::and(const Integer& other) const
+{
+	Integer result = 0;
+
+	result.m_Value.clear();
+
+	//두 숫자중 크기가 작은 쪽 선택.
+	size_t size = m_Value.size() < other.m_Value.size() ?
+					m_Value.size() : other.m_Value.size();
+
+	for (int i = 0; i < size; i++)
+	{
+		result.m_Value.push_back(m_Value[i] & other.m_Value[i]);
+	}
+
+	return result;
+}
+
+const Integer Integer::xor(const Integer& other) const
+{
+	const Integer& x = *this;
+	const Integer& y = other;
+
+	return ~(x&y) &~(~x&~y);
+}
+
+const Integer Integer::not() const
+{
+	Integer result = *this;
+
+	for (int i = 0; i < result.m_Value.size(); i++)
+	{
+		result.m_Value[i] = ~result.m_Value[i];
+	}
+
+	return result;
+}
+
+const Integer Integer::operator&(const Integer& other) const
+{
+	return and(other);
+}
+
+const Integer Integer::operator|(const Integer& other) const
+{
+	return or(other);
+}
+
+const Integer Integer::operator^(const Integer& other) const
+{
+	return xor(other);
+}
+
+const Integer Integer::operator~() const
+{
+	return not();
+}
+
+Integer& Integer::operator&=(const Integer& other)
+{
+	return *this = (*this) & other;
+}
+
+Integer& Integer::operator|=(const Integer& other)
+{
+	return *this = (*this) | other;
+}
+
+Integer& Integer::operator^=(const Integer& other)
+{
+	return *this = (*this) ^ other;
+}
+
+unsigned int Integer::asUnsigned() const
+{
+	return m_Value[0];
+}
+
+long long int Integer::asInt64() const
+{
+	long long int res = 0;
+
+	if (m_Value.size() >= 2)
+	{
+		res = m_Value[1];
+		res <<= 32;
+	}
+
+	res |= m_Value[0];
+
+	return res;
+}
+
+unsigned long long int Integer::asUnsigned64() const
+{
+	long long int res = 0;
+
+	if (m_Value.size() >= 2)
+	{
+		res = m_Value[1];
+		res <<= 32;
+	}
+
+	res |= m_Value[0];
+
+	return res;
+}
+
 Integer abs(const Integer& integer)
 {
 	if (integer.isPositive())
@@ -645,12 +785,66 @@ const Integer operator+(int n, const Integer& other)
 	return other + n;
 }
 
+const Integer operator+(unsigned int n, const Integer& other)
+{
+	return other + n;
+}
+
+const Integer operator+(long long int n, const Integer& other)
+{
+	return other + n;
+}
+
+const Integer operator+(unsigned long long int n, const Integer& other)
+{
+	return other + n;
+}
+
 const Integer operator-(int n, const Integer& other)
 {
-	return -(other - n);
+	Integer nInteger = n;
+
+	return n - other;
+}
+
+
+const Integer operator-(unsigned int n, const Integer& other)
+{
+	Integer nInteger = n;
+
+	return n - other;
+}
+
+const Integer operator-(long long int n, const Integer& other)
+{
+	Integer nInteger = n;
+
+	return n - other;
+}
+
+const Integer operator-(unsigned long long int n, const Integer& other)
+{
+	Integer nInteger = n;
+
+	return n - other;
 }
 
 const Integer operator*(int n, const Integer& other)
+{
+	return other * n;
+}
+
+const Integer operator*(unsigned int n, const Integer& other)
+{
+	return other * n;
+}
+
+const Integer operator*(long long int n, const Integer& other)
+{
+	return other * n;
+}
+
+const Integer operator*(unsigned long long int n, const Integer& other)
 {
 	return other * n;
 }
@@ -662,9 +856,231 @@ const Integer operator/(int n, const Integer& other)
 	return nInteger / other;
 }
 
-const Integer operator%(int n, const Integer& other)
+const Integer operator/(unsigned int n, const Integer& other)
 {
 	Integer nInteger = n;
 
 	return nInteger / other;
+}
+
+const Integer operator/(long long int n, const Integer& other)
+{
+	Integer nInteger = n;
+
+	return nInteger / other;
+}
+
+const Integer operator/(unsigned long long int n, const Integer& other)
+{
+	Integer nInteger = n;
+
+	return nInteger / other;
+}
+
+const Integer operator%(int n, const Integer& other)
+{
+	Integer nInteger = n;
+
+	return nInteger % other;
+}
+
+const Integer operator%(unsigned int n, const Integer& other)
+{
+	Integer nInteger = n;
+
+	return nInteger % other;
+}
+
+const Integer operator%(long long int n, const Integer& other)
+{
+	Integer nInteger = n;
+
+	return nInteger % other;
+}
+
+const Integer operator%(unsigned long long int n, const Integer& other)
+{
+	Integer nInteger = n;
+
+	return nInteger % other;
+}
+
+bool operator==(int n, const Integer& other)
+{
+	return other == n;
+}
+
+bool operator==(unsigned int n, const Integer& other)
+{
+	return other == n;
+}
+
+bool operator==(long long int n, const Integer& other)
+{
+	return other == n;
+}
+
+bool operator==(unsigned long long int n, const Integer& other)
+{
+	return other == n;
+}
+
+bool operator!=(int n, const Integer& other)
+{
+	return other != n;
+}
+
+bool operator!=(unsigned int n, const Integer& other)
+{
+	return other != n;
+}
+
+bool operator!=(long long int n, const Integer& other)
+{
+	return other != n;
+}
+
+bool operator!=(unsigned long long int n, const Integer& other)
+{
+	return other != n;
+}
+
+bool operator>(int n, const Integer& other)
+{
+	return other < n;
+}
+
+bool operator>(unsigned int n, const Integer& other)
+{
+	return other < n;
+}
+
+bool operator>(long long int n, const Integer& other)
+{
+	return other < n;
+}
+
+bool operator>(unsigned long long int n, const Integer& other)
+{
+	return other < n;
+}
+
+bool operator>=(int n, const Integer& other)
+{
+	return other <= n;
+}
+
+bool operator>=(unsigned int n, const Integer& other)
+{
+	return other <= n;
+}
+
+bool operator>=(long long int n, const Integer& other)
+{
+	return other <= n;
+}
+
+bool operator>=(unsigned long long int n, const Integer& other)
+{
+	return other <= n;
+}
+
+bool operator<(int n, const Integer& other)
+{
+	return other > n;
+}
+
+bool operator<(unsigned int n, const Integer& other)
+{
+	return other > n;
+}
+
+bool operator<(long long int n, const Integer& other)
+{
+	return other > n;
+}
+
+bool operator<(unsigned long long int n, const Integer& other)
+{
+	return other > n;
+}
+
+bool operator<=(int n, const Integer& other)
+{
+	return other >= n;
+}
+
+bool operator<=(unsigned int n, const Integer& other)
+{
+	return other >= n;
+}
+
+bool operator<=(long long int n, const Integer& other)
+{
+	return other >= n;
+}
+
+bool operator<=(unsigned long long int n, const Integer& other)
+{
+	return other >= n;
+}
+
+const Integer operator&(int n, const Integer& other)
+{
+	return other & n;
+}
+
+const Integer operator&(unsigned int n, const Integer& other)
+{
+	return other & n;
+}
+
+const Integer operator&(long long int n, const Integer& other)
+{
+	return other & n;
+}
+
+const Integer operator&(unsigned long long int n, const Integer& other)
+{
+	return other & n;
+}
+
+const Integer operator|(int n, const Integer& other)
+{
+	return other | n;
+}
+
+const Integer operator|(unsigned int n, const Integer& other)
+{
+	return other | n;
+}
+
+const Integer operator|(long long int n, const Integer& other)
+{
+	return other | n;
+}
+
+const Integer operator|(unsigned long long int n, const Integer& other)
+{
+	return other | n;
+}
+
+const Integer operator^(int n, const Integer& other)
+{
+	return other ^ n;
+}
+
+const Integer operator^(unsigned int n, const Integer& other)
+{
+	return other ^ n;
+}
+
+const Integer operator^(long long int n, const Integer& other)
+{
+	return other ^ n;
+}
+
+const Integer operator^(unsigned long long int n, const Integer& other)
+{
+	return other ^ n;
 }
