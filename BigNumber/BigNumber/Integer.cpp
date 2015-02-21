@@ -1084,3 +1084,21 @@ const Integer operator^(unsigned long long int n, const Integer& other)
 {
 	return other ^ n;
 }
+
+std::ostream& operator<<(std::ostream& os, const Integer& integer)
+{
+	os << integer.asString();
+
+	return os;
+}
+
+std::istream& operator>>(std::istream& is, Integer& integer)
+{
+	std::string n;
+
+	is >> n;
+
+	integer = Integer(n);
+
+	return is;
+}

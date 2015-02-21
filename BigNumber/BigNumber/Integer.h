@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <iostream>
 
 class Integer
 {
@@ -172,5 +173,10 @@ const Integer operator ^(long long int n, const Integer& other);
 const Integer operator &(unsigned long long int n, const Integer& other);
 const Integer operator |(unsigned long long int n, const Integer& other);
 const Integer operator ^(unsigned long long int n, const Integer& other);
+
+//출력
+
+std::ostream& operator <<(std::ostream& os, const Integer& integer);
+std::istream& operator >>(std::istream& is, Integer& integer);
 
 #endif

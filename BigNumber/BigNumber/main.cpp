@@ -1,5 +1,7 @@
 ﻿#include "Integer.h"
 #include <iostream>
+#include <ctime>
+
 
 Integer factorial(unsigned int n)
 {
@@ -11,10 +13,12 @@ Integer factorial(unsigned int n)
 
 int main()
 {
-	Integer f = Integer("385620482362580421735677065923463640617493109590223590278828403276373402575165543560686168588507361534030051833058916347592172932262498857766114955245039357760034644709279247692495585280000000000000000000000000000000");
-	Integer t = factorial(128);
-	Integer a = 0xffffffff;
-	f.print();
-	t.print();
+	Integer factor = factorial(300);
+	Integer b;
+
+	std::cout << factor << std::endl;
+	std::cin >> b;
+	std::cout << b << std::endl;
+	
 	return 0;
 }
