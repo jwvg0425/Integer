@@ -265,11 +265,6 @@ void Integer::print() const
 	std::cout << valueToString() << std::endl;
 }
 
-const Integer Integer::operator+(const Integer& other) const
-{
-	return add(other);
-}
-
 const Integer Integer::operator+() const
 {
 	return *this;
@@ -291,11 +286,6 @@ Integer& Integer::operator =(const Integer& other)
 const Integer Integer::operator-() const
 {
 	return signSwitch();
-}
-
-const Integer Integer::operator-(const Integer& other) const
-{
-	return add(-other);
 }
 
 unsigned int Integer::highWord(unsigned int n) const
@@ -461,11 +451,6 @@ const Integer Integer::multiply(const Integer& other) const
 	return result;
 }
 
-const Integer Integer::operator *(const Integer& other) const
-{
-	return multiply(other);
-}
-
 Integer& Integer::operator *=(const Integer& other)
 {
 	return *this = (*this) * other;
@@ -551,35 +536,6 @@ int Integer::compare(const Integer& other) const
 	return 0;
 }
 
-bool Integer::operator==(const Integer& other) const
-{
-	return compare(other) == 0;
-}
-
-bool Integer::operator!=(const Integer& other) const
-{
-	return compare(other) != 0;
-}
-
-bool Integer::operator>(const Integer& other) const
-{
-	return compare(other) == 1;
-}
-
-bool Integer::operator>=(const Integer& other) const
-{
-	return compare(other) >= 0;
-}
-
-bool Integer::operator<(const Integer& other) const
-{
-	return compare(other) == -1;
-}
-
-bool Integer::operator<=(const Integer& other) const
-{
-	return compare(other) <= 0;
-}
 void Integer::divideWithRemainder(const Integer& divisor, const Integer& dividend,
 									Integer* quot, Integer* rem, int bit) const
 {
@@ -626,16 +582,6 @@ const Integer Integer::mod(const Integer& other) const
 	}
 
 	return rem;
-}
-
-const Integer Integer::operator/(const Integer& other) const
-{
-	return divide(other);
-}
-
-const Integer Integer::operator%(const Integer& other) const
-{
-	return mod(other);
 }
 
 Integer& Integer::operator/=(const Integer& other)
@@ -698,26 +644,6 @@ const Integer Integer::not() const
 	return result;
 }
 
-const Integer Integer::operator&(const Integer& other) const
-{
-	return and(other);
-}
-
-const Integer Integer::operator|(const Integer& other) const
-{
-	return or(other);
-}
-
-const Integer Integer::operator^(const Integer& other) const
-{
-	return xor(other);
-}
-
-const Integer Integer::operator~() const
-{
-	return not();
-}
-
 Integer& Integer::operator&=(const Integer& other)
 {
 	return *this = (*this) & other;
@@ -768,6 +694,11 @@ unsigned long long int Integer::asUnsigned64() const
 	return res;
 }
 
+const Integer Integer::operator ~() const
+{
+	return not();
+}
+
 Integer abs(const Integer& integer)
 {
 	if (integer.isPositive())
@@ -780,309 +711,75 @@ Integer abs(const Integer& integer)
 	}
 }
 
-const Integer operator+(int n, const Integer& other)
+const Integer operator+(const Integer& lhs, const Integer& rhs)
 {
-	return other + n;
+	return lhs.add(rhs);
 }
 
-const Integer operator+(unsigned int n, const Integer& other)
+const Integer operator-(const Integer& lhs, const Integer& rhs)
 {
-	return other + n;
-}
-
-const Integer operator+(long long int n, const Integer& other)
-{
-	return other + n;
-}
-
-const Integer operator+(unsigned long long int n, const Integer& other)
-{
-	return other + n;
-}
-
-const Integer operator-(int n, const Integer& other)
-{
-	Integer nInteger = n;
-
-	return n - other;
+	return lhs.add(-rhs);
 }
 
 
-const Integer operator-(unsigned int n, const Integer& other)
+const Integer operator*(const Integer& lhs, const Integer& rhs)
 {
-	Integer nInteger = n;
-
-	return n - other;
+	return lhs.multiply(rhs);
 }
 
-const Integer operator-(long long int n, const Integer& other)
+const Integer operator/(const Integer& lhs, const Integer& rhs)
 {
-	Integer nInteger = n;
-
-	return n - other;
+	return lhs.divide(rhs);
 }
 
-const Integer operator-(unsigned long long int n, const Integer& other)
+const Integer operator%(const Integer& lhs, const Integer& rhs)
 {
-	Integer nInteger = n;
-
-	return n - other;
+	return lhs.mod(rhs);
 }
 
-const Integer operator*(int n, const Integer& other)
+bool operator==(const Integer& lhs, const Integer& rhs)
 {
-	return other * n;
+	return lhs.compare(rhs) == 0;
 }
 
-const Integer operator*(unsigned int n, const Integer& other)
+bool operator!=(const Integer& lhs, const Integer& rhs)
 {
-	return other * n;
+	return lhs.compare(rhs) != 0;
 }
 
-const Integer operator*(long long int n, const Integer& other)
+bool operator>(const Integer& lhs, const Integer& rhs)
 {
-	return other * n;
+	return lhs.compare(rhs) == 1;
 }
 
-const Integer operator*(unsigned long long int n, const Integer& other)
+bool operator>=(const Integer& lhs, const Integer& rhs)
 {
-	return other * n;
+	return lhs.compare(rhs) >= 0;
 }
 
-const Integer operator/(int n, const Integer& other)
+bool operator<(const Integer& lhs, const Integer& rhs)
 {
-	Integer nInteger = n;
-
-	return nInteger / other;
+	return lhs.compare(rhs) == -1;
 }
 
-const Integer operator/(unsigned int n, const Integer& other)
+bool operator<=(const Integer& lhs, const Integer& rhs)
 {
-	Integer nInteger = n;
-
-	return nInteger / other;
+	return lhs.compare(rhs) <= 0;
 }
 
-const Integer operator/(long long int n, const Integer& other)
+const Integer operator&(const Integer& lhs, const Integer& rhs)
 {
-	Integer nInteger = n;
-
-	return nInteger / other;
+	return lhs.and(rhs);
 }
 
-const Integer operator/(unsigned long long int n, const Integer& other)
+const Integer operator|(const Integer& lhs, const Integer& rhs)
 {
-	Integer nInteger = n;
-
-	return nInteger / other;
+	return lhs.or(rhs);
 }
 
-const Integer operator%(int n, const Integer& other)
+const Integer operator^(const Integer& lhs, const Integer& rhs)
 {
-	Integer nInteger = n;
-
-	return nInteger % other;
-}
-
-const Integer operator%(unsigned int n, const Integer& other)
-{
-	Integer nInteger = n;
-
-	return nInteger % other;
-}
-
-const Integer operator%(long long int n, const Integer& other)
-{
-	Integer nInteger = n;
-
-	return nInteger % other;
-}
-
-const Integer operator%(unsigned long long int n, const Integer& other)
-{
-	Integer nInteger = n;
-
-	return nInteger % other;
-}
-
-bool operator==(int n, const Integer& other)
-{
-	return other == n;
-}
-
-bool operator==(unsigned int n, const Integer& other)
-{
-	return other == n;
-}
-
-bool operator==(long long int n, const Integer& other)
-{
-	return other == n;
-}
-
-bool operator==(unsigned long long int n, const Integer& other)
-{
-	return other == n;
-}
-
-bool operator!=(int n, const Integer& other)
-{
-	return other != n;
-}
-
-bool operator!=(unsigned int n, const Integer& other)
-{
-	return other != n;
-}
-
-bool operator!=(long long int n, const Integer& other)
-{
-	return other != n;
-}
-
-bool operator!=(unsigned long long int n, const Integer& other)
-{
-	return other != n;
-}
-
-bool operator>(int n, const Integer& other)
-{
-	return other < n;
-}
-
-bool operator>(unsigned int n, const Integer& other)
-{
-	return other < n;
-}
-
-bool operator>(long long int n, const Integer& other)
-{
-	return other < n;
-}
-
-bool operator>(unsigned long long int n, const Integer& other)
-{
-	return other < n;
-}
-
-bool operator>=(int n, const Integer& other)
-{
-	return other <= n;
-}
-
-bool operator>=(unsigned int n, const Integer& other)
-{
-	return other <= n;
-}
-
-bool operator>=(long long int n, const Integer& other)
-{
-	return other <= n;
-}
-
-bool operator>=(unsigned long long int n, const Integer& other)
-{
-	return other <= n;
-}
-
-bool operator<(int n, const Integer& other)
-{
-	return other > n;
-}
-
-bool operator<(unsigned int n, const Integer& other)
-{
-	return other > n;
-}
-
-bool operator<(long long int n, const Integer& other)
-{
-	return other > n;
-}
-
-bool operator<(unsigned long long int n, const Integer& other)
-{
-	return other > n;
-}
-
-bool operator<=(int n, const Integer& other)
-{
-	return other >= n;
-}
-
-bool operator<=(unsigned int n, const Integer& other)
-{
-	return other >= n;
-}
-
-bool operator<=(long long int n, const Integer& other)
-{
-	return other >= n;
-}
-
-bool operator<=(unsigned long long int n, const Integer& other)
-{
-	return other >= n;
-}
-
-const Integer operator&(int n, const Integer& other)
-{
-	return other & n;
-}
-
-const Integer operator&(unsigned int n, const Integer& other)
-{
-	return other & n;
-}
-
-const Integer operator&(long long int n, const Integer& other)
-{
-	return other & n;
-}
-
-const Integer operator&(unsigned long long int n, const Integer& other)
-{
-	return other & n;
-}
-
-const Integer operator|(int n, const Integer& other)
-{
-	return other | n;
-}
-
-const Integer operator|(unsigned int n, const Integer& other)
-{
-	return other | n;
-}
-
-const Integer operator|(long long int n, const Integer& other)
-{
-	return other | n;
-}
-
-const Integer operator|(unsigned long long int n, const Integer& other)
-{
-	return other | n;
-}
-
-const Integer operator^(int n, const Integer& other)
-{
-	return other ^ n;
-}
-
-const Integer operator^(unsigned int n, const Integer& other)
-{
-	return other ^ n;
-}
-
-const Integer operator^(long long int n, const Integer& other)
-{
-	return other ^ n;
-}
-
-const Integer operator^(unsigned long long int n, const Integer& other)
-{
-	return other ^ n;
+	return lhs.xor(rhs);
 }
 
 std::ostream& operator<<(std::ostream& os, const Integer& integer)
